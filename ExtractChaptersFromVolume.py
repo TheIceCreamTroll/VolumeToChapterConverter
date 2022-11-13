@@ -31,7 +31,6 @@ if args.parse and not args.index:
 
 ext = '.cbz'
 cwd = args.dir
-series_regex = r'^.+?(?= [([{]| v[0-9]+)'
 vol_regex = r'(?=\(?)v[\d]+(?=\)?)'
 ch_regex = r'(?:c|\s)[\d]+(?:x\d)?'
 title_regex = r'\[(.*?)\]'
@@ -45,19 +44,20 @@ def cleanup(extract_path=None):
     if extract_path and extract_path.exists():
         shutil.rmtree(extract_path)
 
-ext_folder = ext_dest = Path.cwd() / 'output' / 'extracted'
-cleanup(extract_path=ext_folder)
 
 skipped_files = 0
 
 if args.recursive:
     file_list = [(f, r) for (r, d, files) in os.walk(cwd) for f in files]
-else: 
+else:
     file_list = [(f, '.') for f in os.listdir(cwd)]
 
 for volume_file in file_list:
+    final_dest = Path(volume_file[1]) / 'output'
+    ext_folder = final_dest / 'extracted'
+    cleanup(extract_path=ext_folder)
+
     if volume_file[0].endswith(ext):
-        series_name = re.search(series_regex, volume_file[0]).group(0)
         ext_dest = ext_folder / volume_file[0].rsplit('.', 1)[0]
         if not ext_dest.exists():
             Path.mkdir(ext_dest, parents=True, exist_ok=True)
@@ -108,10 +108,10 @@ for volume_file in file_list:
             for chapter_folder in dirs:
 
                 output_folder = (ext_dest / chapter_folder).resolve()
-                output_file = f"{(cwd / 'output' / series_name / chapter_folder).resolve()}{ext}"
+                output_file = f"{(final_dest / chapter_folder).resolve()}{ext}"
 
-                if not os.path.exists(f"{(cwd / 'output' / series_name).resolve()}"): 
-                    os.mkdir(f"{(cwd / 'output' / series_name).resolve()}")
+                if not Path.exists(final_dest.resolve()):
+                    Path.mkdir(final_dest.resolve(), parents=True, exist_ok=True)
 
                 print(f'Creating: "{chapter_folder}{ext}"')
 
