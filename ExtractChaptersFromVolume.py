@@ -64,7 +64,7 @@ for volume_file in file_list:
 
         with zipfile.ZipFile(cwd / volume_file[1] / volume_file[0], 'r') as f:
             f.extractall(ext_dest)
-            print(f"\nProcessing: \"{volume_file[1]}\\{volume_file[0]}\"")
+            print(f'\nProcessing: "{volume_file[1]}\\{volume_file[0]}"')
 
         old_ch = None
         not_found_counter = 0
@@ -75,10 +75,10 @@ for volume_file in file_list:
                 try:
                     chapter = re.search(ch_regex, file).group(0).lstrip(' (c0').rstrip(') ')
                 except AttributeError:
-                    print(f"No chapters found in \"{file}\". Skipping...")
+                    print(f'No chapters found in "{file}". Skipping...')
                     not_found_counter += 1
                     if not_found_counter >= 3:
-                        print(f"-> There seem to be not chapters in \"{volume_file[1]}\\{volume_file[0]}\". Skipping...")
+                        print(f'-> There seem to be not chapters in "{volume_file[1]}\\{volume_file[0]}". Skipping...')
                         skipped_files += 1
                         break
                     else:
@@ -113,7 +113,7 @@ for volume_file in file_list:
                 if not os.path.exists(f"{(cwd / 'output' / series_name).resolve()}"): 
                     os.mkdir(f"{(cwd / 'output' / series_name).resolve()}")
 
-                print(f'Creating: \"{chapter_folder}{ext}\"')
+                print(f'Creating: "{chapter_folder}{ext}"')
 
                 with zipfile.ZipFile(output_file, 'w', zipfile.ZIP_STORED) as archive:
                     for file_path in output_folder.rglob("*"):
@@ -122,8 +122,8 @@ for volume_file in file_list:
         cleanup(ext_folder)
 
 if skipped_files == 1:
-    print("\nFinished, but 1 file was skipped. Check the console for more info.\n")
+    print('\nFinished, but 1 file was skipped. Check the console for more info.\n')
 elif skipped_files > 1:
-    print(f"\nFinished, but {skipped_files} files were skipped. Check the console for more info.\n")
+    print(f'\nFinished, but {skipped_files} files were skipped. Check the console for more info.\n')
 else:
-    print("\nFinished.\n")
+    print('\nFinished.\n')
