@@ -6,7 +6,7 @@ import os
 import re
 
 
-parser = argparse.ArgumentParser(description='')
+parser = argparse.ArgumentParser(description='', formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('-p', '--parse',
                     action='store_true',
                     help='Parse the title from the filename. Default: False')
@@ -20,6 +20,9 @@ parser.add_argument('-d', '--dir',
 parser.add_argument('-r', '--recursive',
                     action='store_true',
                     help='Recursively search for files. Default: False')
+parser.add_argument('--use-series-name',
+                    action='store_true',
+                    help='Save based on series name in volume-filename \n(e.g., "Berserk v40.cbz" is saved in ".\Berserk"). Default: False')
 parser.add_argument('--debug',
                     action='store_true',
                     help='Print extra messages to the console')
@@ -31,6 +34,7 @@ if args.parse and not args.index:
 
 ext = '.cbz'
 cwd = args.dir
+series_regex = r'^.+?(?=[._ ][vV](ol|OL)?(ume|UME)?\.?[0-9 ]+)'
 vol_regex = r'(?=\(?)v[\d]+(?=\)?)'
 ch_regex = r'(?:c|\s)[\d]+(?:x\d)?'
 title_regex = r'\[(.*?)\]'
@@ -53,11 +57,16 @@ else:
     file_list = [(f, '.') for f in os.listdir(cwd)]
 
 for volume_file in file_list:
-    final_dest = Path(volume_file[1]) / 'output'
-    ext_folder = final_dest / 'extracted'
-    cleanup(extract_path=ext_folder)
-
     if volume_file[0].endswith(ext):
+        if args.use_series_name:
+            series_name = re.search(series_regex, volume_file[0]).group(0)
+            series_name = series_name.replace('.', ' ').replace('_', ' ').strip()
+            final_dest = Path.cwd() / 'output' / series_name
+        else:
+            final_dest = Path(volume_file[1]) / 'output'
+        ext_folder = final_dest / 'extracted'
+        cleanup(extract_path=ext_folder)
+
         ext_dest = ext_folder / volume_file[0].rsplit('.', 1)[0]
         if not ext_dest.exists():
             Path.mkdir(ext_dest, parents=True, exist_ok=True)
@@ -122,8 +131,8 @@ for volume_file in file_list:
         cleanup(ext_folder)
 
 if skipped_files == 1:
-    print('\nFinished, but 1 file was skipped. Check the console for more info.\n')
+    print('\nFinished, but 1 file was skipped. Check the console for more info.')
 elif skipped_files > 1:
-    print(f'\nFinished, but {skipped_files} files were skipped. Check the console for more info.\n')
+    print(f'\nFinished, but {skipped_files} files were skipped. Check the console for more info.')
 else:
-    print('\nFinished.\n')
+    print('\nFinished.')
