@@ -6,23 +6,25 @@ import os
 import re
 
 
-parser = argparse.ArgumentParser(description='', formatter_class=argparse.RawTextHelpFormatter)
+parser = argparse.ArgumentParser(description='Extract chapters from comic / manga volumes',
+                                 formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('-p', '--parse',
                     action='store_true',
-                    help='Parse the title from the filename. Default: False')
+                    help='Parse the chapter titles from the image filenames. Default: False')
 parser.add_argument('-i', '--index',
                     type=int,
                     default=2,
-                    help="Position in filename for the title. Found with filename.split('['). Default: 2")
+                    help="The title's position in the filename. Found with filename.split('['). Default: 2")
 parser.add_argument('-d', '--dir',
                     default=Path.cwd(),
-                    help='Location to run the script on. Default: Current directory')
+                    help='Folder to run the script in. Default: Current directory')
 parser.add_argument('-r', '--recursive',
                     action='store_true',
                     help='Recursively search for files. Default: False')
 parser.add_argument('--use-series-name',
                     action='store_true',
-                    help='Save based on series name in volume-filename \n(e.g., "Berserk v40.cbz" is saved in ".\Berserk"). Default: False')
+                    help='Save chapters into subfolders based on the series name, which is parsed from the '
+                         'volume\'s filename\n(e.g., "Berserk v40.cbz" is saved in ".\output\Berserk"). Default: False')
 parser.add_argument('--debug',
                     action='store_true',
                     help='Print extra messages to the console')
@@ -38,6 +40,7 @@ series_regex = r'^.+?(?=[._ ][vV](ol|OL)?(ume|UME)?\.?[0-9 ]+)'
 vol_regex = r'(?=\(?)v[\d]+(?=\)?)'
 ch_regex = r'(?:c|\s)[\d]+(?:x\d)?'
 title_regex = r'\[(.*?)\]'
+
 
 def log(msg):
     if args.debug:
