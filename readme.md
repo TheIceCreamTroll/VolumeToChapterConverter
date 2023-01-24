@@ -5,7 +5,9 @@ you may need to replace `python` with `python3`
 
 For the extraction to work, the filenames of your volume's images should look something like: 
 > Series Title - c001 (v01) - p000 [optional chapter title] [some other stuff that doesn't matter].png
+
 > Series Title - 001x2 [optional chapter title] [some other stuff that doesn't matter].png
+
 > Series Title - 001 (v01) - p000  [some other stuff that doesn't matter] [optional chapter title].png
 
 What's important is the `c001 (v01)` pattern. As long as the filenames follow it, or another commonly used format, 
